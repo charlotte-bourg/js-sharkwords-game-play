@@ -50,7 +50,21 @@ const isLetterInWord = (letter) => document.querySelector(`div.${letter}`) !== n
 // Called when `letter` is in word. Update contents of divs with `letter`.
 //
 const handleCorrectGuess = (letter) => {
-  // Replace this with your code
+  const letterDivs = document.querySelectorAll(`.${letter}`); 
+  for (const letterDiv of letterDivs) 
+  {
+    letterDiv.innerHTML = `${letter}`; 
+  }
+  let guessedAll = true;
+  const allDivs = document.querySelectorAll('div')
+  for (const div of allDivs){
+    if (div.innerHTML === ''){ 
+    guessedAll = false; 
+    }
+  }
+  if (guessedAll){
+    document.querySelector('#win').setAttribute('style','');
+  }
 };
 
 //
@@ -62,7 +76,13 @@ const handleCorrectGuess = (letter) => {
 
 const handleWrongGuess = () => {
   numWrong += 1;
-  // Replace this with your code
+  if (numWrong === 5){
+    for (const button of document.querySelectorAll('button')) {
+      disableLetterButton(button);
+    }
+    document.querySelector('#play-again').setAttribute('style','');
+  }
+  document.querySelector('#shark-img > img').setAttribute('src',`/static/images/guess${numWrong}.png`);
 };
 
 //  Reset game state. Called before restarting the game.
@@ -74,15 +94,29 @@ const resetGame = () => {
 //
 (function startGame() {
   // For now, we'll hardcode the word that the user has to guess.
-  const word = 'hello';
+  const word = WORDS[Math.floor(Math.random() * WORDS.length)];
 
   createDivsForChars(word);
   generateLetterButtons();
 
   for (const button of document.querySelectorAll('button')) {
     // add an event handler to handle clicking on a letter button
-    // YOUR CODE HERE
+    button.addEventListener('click', () => {
+      const letter = button.innerHTML;
+      disableLetterButton(button);
+      if (isLetterInWord(letter)){
+        handleCorrectGuess(letter);
+      }
+      else handleWrongGuess();
+    });
+
   }
+  document.querySelector('#win').addEventListener('click', () => {
+    resetGame();
+  });
+  document.querySelector('#play-again').addEventListener('click', () => {
+    resetGame();
+  });
 
   // add an event handler to handle clicking on the Play Again button
   // YOUR CODE HERE
